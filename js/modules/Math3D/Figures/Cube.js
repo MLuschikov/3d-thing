@@ -1,13 +1,12 @@
 class Cube extends Figure {
-    constructor(length = 10, width = 10, height = 10) {
+    constructor(length = 10, width = 10, height = 10, color = '#ffffff') {
         super();
 
         this.name = 'Cube';
-        
+
         this.length = length;
         this.width = width;
         this.height = height;
-
         this.points = [
             new Point(-this.length / 2, -this.width / 2, -this.height / 2),
             new Point(-this.length / 2, this.width / 2, -this.height / 2),
@@ -33,12 +32,12 @@ class Cube extends Figure {
             new Edge(3, 7)
         ];
         this.polygons = [
-            new Poligon([0, 1, 2, 3]),
-            new Poligon([4, 5, 6, 7]),
-            new Poligon([1, 5, 6, 2]),
-            new Poligon([0, 4, 7, 3]),
-            new Poligon([0, 4, 5, 1]),
-            new Poligon([3, 7, 6, 2])
+            new Poligon([0, 1, 2, 3], color),
+            new Poligon([4, 5, 6, 7], color),
+            new Poligon([1, 5, 6, 2], color),
+            new Poligon([0, 4, 7, 3], color),
+            new Poligon([0, 4, 5, 1], color),
+            new Poligon([3, 7, 6, 2], color)
         ];
 
         this.pointsZero = [

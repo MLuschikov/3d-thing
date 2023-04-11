@@ -1,4 +1,4 @@
-class CylinderData {
+class TorData {
     constructor(num) {
         
         this.RTop = document.createElement('input');
@@ -36,14 +36,6 @@ class CylinderData {
         this.HDet.dataset.num = num;
         this.HDet.id = 'HDetalization';
         this.HDet.className = 'size';
-
-        this.isCap = document.createElement('input');
-        this.isCap.type = 'checkbox';
-        this.isCap.dataset.num = num;
-        this.isCap.id = 'isCap';
-        this.isCap.className = 'size';
-        this.isCap.checked = true;
-        
 
         this.color = document.createElement('input');
         this.color.type = 'color';
@@ -116,8 +108,6 @@ class CylinderData {
         this.td31.innerHTML = 'detalization';
         this.td32.appendChild(this.RDet);
         this.td33.appendChild(this.HDet);
-        this.td34.innerHTML = 'Cap?';
-        this.td34.appendChild(this.isCap);
 
         this.td41.innerHTML = 'color';
         this.td42.appendChild(this.color);
@@ -141,7 +131,6 @@ class CylinderData {
         this.tr3.appendChild(this.td31);
         this.tr3.appendChild(this.td32);
         this.tr3.appendChild(this.td33);
-        this.tr3.appendChild(this.td34);
 
         this.tr4.appendChild(this.td41);
         this.tr4.appendChild(this.td42);

@@ -7,8 +7,7 @@ class Graph3D extends Component {
             bottom: -5,
             width: 10,
             height: 10,
-            camera: new Point(0, 50, 0),
-            focus: new Point(0, 30, 0)
+            camera: new Camera(0, 50, 0, 20, 10, 10)
         };
 
         this.canvas = new Canvas({
@@ -46,15 +45,25 @@ class Graph3D extends Component {
         this.CBP = true;
         this.CBE = true;
         this.CBF = true;
+        this.SolSysRotate = true;
 
-        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+        this.backColor = '#ffffff';
+
+        /*setInterval(() => {
+            this.figures.forEach(figure => figure.doAnimation(this.math3D))
+            this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
+        }, 50);*/
+
+        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
 
     wheel(event) {
-        const delta = event.wheelDelta > 0 ? -1 : 1;
-        this.WIN.camera.y += delta;
-        this.WIN.focus.y += delta;
-        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+        const delta = event.wheelDelta > 0 ? -10 : 10;
+        this.WIN.camera.center.y += delta;
+        this.WIN.camera.points[0].y += delta;
+        this.WIN.camera.points[1].y += delta;
+        this.WIN.camera.points[0].y += delta;
+        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
 
     mouseup() {
@@ -72,31 +81,41 @@ class Graph3D extends Component {
     mousemove(event) {
         if (this.canRotate) {
             const { movementX, movementY } = event;
-            this.figures.forEach(figure => {
-                figure.points.forEach(point => {
-                    this.math3D.rotateX(movementY / 180, point);
-                    this.math3D.rotateZ(movementX / 180, point);
-                    /*
-                    if (event.altKey) {
-                        this.math3D.rotateY(movementY / 180, point);
-                    }
-                    */
-                    this.figures[0].rotX += movementY / 180;
-                    this.figures[0].rotZ += movementX / 180;
+            /*if (this.SolSysRotate) {
+                this.figures.forEach(figure => {
+                    figure.points.forEach(point => {
+                        this.math3D.rotateX(movementY / 180, point);
+                        this.math3D.rotateZ(movementX / 180, point);
 
+                        this.figures[0].rotX += movementY / 180;
+                        this.figures[0].rotZ += movementX / 180;
+
+                    });
                 });
-            });
-            this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+            }*/
+            if (this.SolSysRotate) {
+                    this.WIN.camera.points.forEach(point => {
+                        point.x - this.WIN.camera.center.x;
+                        point.y - this.WIN.camera.center.y;
+                        point.z - this.WIN.camera.center.z;
+                        this.math3D.rotateX(movementY / 180, point);
+                        this.math3D.rotateZ(movementX / 180, point);
+                        point.x + this.WIN.camera.center.x;
+                        point.y + this.WIN.camera.center.y;
+                        point.z + this.WIN.camera.center.z;
+                    });
+            }
+            this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
         }
     }
 
-    clear() {
-        this.canvas.clear();
+    clear(color) {
+        this.canvas.clear(color);
     };
 
-    renderScene(figures, CBP, CBE, CBF) {
+    renderScene(figures, CBP, CBE, CBF, backColor) {
 
-        this.clear();
+        this.clear(backColor);
 
         const scene = new Figure;
 
@@ -119,13 +138,18 @@ class Graph3D extends Component {
                 scene.edges.push(new Edge(point1, point2));
             });
 
-            figure.points.forEach(point =>
+            figure.points.forEach(point => {
                 scene.points.push(point)
+            }
             )
         });
-
+        figures[0].points.forEach(point => {
+            scene.points.push(point)
+        }
+        )
+/*
         this.math3D.calcCenters(scene);
-        this.math3D.calcDistance(scene, this.WIN.camera, 'distance');
+        this.math3D.calcDistance(scene, this.WIN.camera.center, 'distance');
         this.math3D.calcDistance(scene, this.LIGHT, 'lumen');
         this.math3D.sortByArtistAlgoritm(scene.polygons);
 
@@ -143,11 +167,12 @@ class Graph3D extends Component {
         }
 
         if (CBP) {
-            scene.points.forEach(point =>
+            scene.points.forEach(point => {
                 this.canvas.point(
                     this.math3D.xs(point),
                     this.math3D.ys(point)
-                ));
+                )
+            });
         }
 
         if (CBF) {
@@ -168,16 +193,95 @@ class Graph3D extends Component {
                     }),
                     polygon.color)
             });
-        }
+        }*/
     }
 
     addFigure(figure) {
         switch (figure) {
-            case 'Cube': this.figures[0] = new Cube; break;
-            case 'Sphere': this.figures[0] = new Sphere; break;
-            case 'Cylinder': this.figures[0] = new Cylinder; break;
+            case 'Cube':
+                this.figures = [];
+                this.figures[0] = new Cube;
+                this.SolSysRotate = true;
+                this.backColor = '#ffffff';
+                this.LIGHT = new Light(20, 20, 20);
+                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+                this.CBP = true;
+                this.CBE = true;
+                break;
+            case 'Sphere':
+                this.figures = [];
+                this.figures[0] = new Sphere;
+                this.SolSysRotate = true;
+                this.backColor = '#ffffff';
+                this.LIGHT = new Light(20, 20, 20);
+                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+                this.CBP = true;
+                this.CBE = true;
+                break;
+            case 'Cylinder':
+                this.figures = [];
+                this.figures[0] = new Cylinder;
+                this.SolSysRotate = true;
+                this.backColor = '#ffffff';
+                this.LIGHT = new Light(20, 20, 20);
+                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+                this.CBP = true;
+                this.CBE = true;
+                break;
+            case 'Tor':
+                this.figures = [];
+                this.figures[0] = new Tor;
+                this.SolSysRotate = true;
+                this.backColor = '#ffffff';
+                this.LIGHT = new Light(20, 20, 20);
+                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+                this.CBP = true;
+                this.CBE = true;
+                break;
+            case 'HypPor':
+                this.figures = [];
+                this.figures[0] = new HyperbolicParaboloid;
+                this.SolSysRotate = true;
+                this.backColor = '#ffffff';
+                this.LIGHT = new Light(20, 20, 20);
+                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+                this.CBP = true;
+                this.CBE = true;
+                break;
+            case 'TRSolSys':
+                this.figures = [];
+
+                const TRSolS = new TheRealSolarSystem;
+
+                const AE = TRSolS.AE;
+
+                this.figures = TRSolS.figures;
+
+                this.SolSysRotate = false;
+                this.CBP = false;
+                this.CBE = false;
+                this.backColor = '#111111';
+                this.LIGHT = new Light(0, 0, 0, 3.828 * Math.pow(10, 26));
+                this.WIN.camera = new Camera(0, AE * 80, 0, 20, 10, 10);
+                break;
+            case 'SolSys':
+                this.figures = [];
+
+                const SolS = new SolarSystem;
+
+                const NRAE = SolS.NRAE;
+
+                this.figures = SolS.figures;
+
+                this.SolSysRotate = false;
+                this.CBP = false;
+                this.CBE = false;
+                this.backColor = '#111111';
+                this.LIGHT = new Light(0, 0, 0, 3.828 * Math.pow(10, 26));
+                this.WIN.camera = new Camera(0, NRAE * 80, 0, 20, 10, 10);
+                break;
         }
-        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
 
     changeFigure(event) {
@@ -198,8 +302,8 @@ class Graph3D extends Component {
                 break;
 
             case 'size':
-                const rotX = this.figures[0].rotX;
-                const rotZ = this.figures[0].rotZ;
+                // const rotX = this.figures[0].rotX;
+                // const rotZ = this.figures[0].rotZ;
 
                 switch (this.figures[0].name) {
                     case 'Cube':
@@ -218,12 +322,23 @@ class Graph3D extends Component {
                         )
                         break;
                     case 'Cylinder':
+                        let isCap = this.figures[0].isCap;
                         this.figures[0] = new Cylinder(
                             document.getElementById('RTop').value ? document.getElementById('RTop').value - 0 : 10,
                             document.getElementById('RBot').value ? document.getElementById('RBot').value - 0 : 10,
                             document.getElementById('height').value ? document.getElementById('height').value - 0 : 20,
                             document.getElementById('RDetalization').value ? document.getElementById('RDetalization').value - 0 : 20,
-                            document.getElementById('HDetalization').value ? document.getElementById('HDetalization').value - 0 : 5
+                            document.getElementById('HDetalization').value ? document.getElementById('HDetalization').value - 0 : 5,
+                            event.target.id == 'isCap' ? !isCap : isCap
+                        )
+                        break;
+                    case 'Tor':
+                        this.figures[0] = new Tor(
+                            document.getElementById('RTop').value ? document.getElementById('RTop').value - 0 : 10,
+                            document.getElementById('RBot').value ? document.getElementById('RBot').value - 0 : 6,
+                            document.getElementById('height').value ? document.getElementById('height').value - 0 : 6,
+                            document.getElementById('RDetalization').value ? document.getElementById('RDetalization').value - 0 : 20,
+                            document.getElementById('HDetalization').value ? document.getElementById('HDetalization').value - 0 : 20
                         )
                         break;
                 }
@@ -241,24 +356,19 @@ class Graph3D extends Component {
                 this.figures[event.target.dataset.num].polygons.forEach(polygon => polygon.color = event.target.value)
                 break;
         }
-        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
-    }
-
-    delFigure(num) {
-        this.figures[num] = new Figure;
-        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+        this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
 
     elemVisibile(id) {
         switch (id) {
             case 'CBPoints': this.CBP = !this.CBP;
-                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
                 break;
             case 'CBEdjes': this.CBE = !this.CBE;
-                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
                 break;
             case 'CBFaces': this.CBF = !this.CBF;
-                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF);
+                this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
                 break;
         }
     }

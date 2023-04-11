@@ -1,5 +1,5 @@
 class Sphere extends Figure {
-    constructor(rx = 10, ry = 10, rz = 10, count = 20) {
+    constructor(rx = 10, ry = 10, rz = 10, count = 20, color = '#ffffff') {
         super();
 
         this.name = 'Sphere';
@@ -48,8 +48,8 @@ class Sphere extends Figure {
                     i,
                     i + 1 == j * count ? (j == 0 ? 0 : (j - 1) * count) : i + 1,
                     i + 1 == j * count ? i + 1 : i + count + 1,
-                    i + count
-                ]));
+                    i + count],
+                color));
             }
         }
 

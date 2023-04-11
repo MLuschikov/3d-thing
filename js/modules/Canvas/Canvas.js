@@ -29,8 +29,8 @@ class Canvas {
         return -y * this.WIN.height / this.canvas.height;
     }
 
-    clear() {
-        this.context.fillStyle = '#fff';
+    clear(color = '#fff') {
+        this.context.fillStyle = color;
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 

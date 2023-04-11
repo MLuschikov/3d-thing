@@ -24,7 +24,8 @@ class Graph3DUI extends Component {
         this.callbacks.addFigure(
             event.target.dataset.figure
         )
-        const div = document.getElementById('graph3DUI');
+        const div = document.getElementById('figureDataTable');
+        div.innerHTML = '';
 
         const divFigure = document.createElement(`div`);
         divFigure.className = 'figure';
@@ -34,13 +35,14 @@ class Graph3DUI extends Component {
         const cubeData = new CubeData(num);
         const sphereData = new SphereData(num);
         const cylinderData = new CylinderData(num);
+        const torData = new TorData(num);
 
         switch (event.target.dataset.figure) {
             case 'Cube':
                 divFigure.appendChild(cubeData.table);
                 div.appendChild(divFigure);
                 cubeData.color.addEventListener(
-                    'mouseover',
+                    'input',
                     (event) => {
                         this.changeFigure(
                             event
@@ -53,11 +55,12 @@ class Graph3DUI extends Component {
                 divFigure.appendChild(sphereData.table);
                 div.appendChild(divFigure);
                 sphereData.color.addEventListener(
-                    'mouseover',
+                    'input',
                     (event) => {
                         this.changeFigure(
                             event
                         )
+
                     }
                 )
                 break;
@@ -65,7 +68,15 @@ class Graph3DUI extends Component {
                 divFigure.appendChild(cylinderData.table);
                 div.appendChild(divFigure);
                 cylinderData.color.addEventListener(
-                    'mouseover',
+                    'input',
+                    (event) => {
+                        this.changeFigure(
+                            event
+                        )
+                    }
+                )
+                cylinderData.isCap.addEventListener(
+                    'mousedown',
                     (event) => {
                         this.changeFigure(
                             event
@@ -73,6 +84,19 @@ class Graph3DUI extends Component {
                     }
                 )
                 break;
+            case 'Tor':
+                divFigure.appendChild(torData.table);
+                div.appendChild(divFigure);
+                torData.color.addEventListener(
+                    'input',
+                    (event) => {
+                        this.changeFigure(
+                            event
+                        )
+                    }
+                )
+                break;
+
         }
 
         for (let i = 0; i < document.getElementsByClassName('figure').length; i++) {
