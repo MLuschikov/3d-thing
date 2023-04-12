@@ -5,6 +5,7 @@ class Figure {
         this.polygons = polygons;
         this.center = center;
         this.animations = [];
+        this.angleChecker = new Point(0 + center.x, 0 + center.y, 1 + center.z);
     }
 
     dropAnimation() {
@@ -43,6 +44,15 @@ class Figure {
             this.center.y = cenY;
             this.center.z = cenZ;
             */
+        })
+    }
+
+    checkAngle() {
+        const anglePoint = new Point(this.angleChecker.x - this.center.x, this.angleChecker.y - this.center.y, this.angleChecker.z - this.center.z);
+        return ({
+            xA: -(Math.atan(anglePoint.z / anglePoint.y) - 1.5707963267948966),
+            yA: -(Math.atan(anglePoint.z / anglePoint.x) - 1.5707963267948966),
+            zA: anglePoint.z / anglePoint.x == Infinity ? 0 : -(Math.atan(anglePoint.y / anglePoint.x) - 1.5707963267948966)
         })
     }
 }

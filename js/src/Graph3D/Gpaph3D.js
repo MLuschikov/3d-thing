@@ -58,11 +58,11 @@ class Graph3D extends Component {
     }
 
     wheel(event) {
-        const delta = event.wheelDelta > 0 ? -10 : 10;
+        const delta = event.wheelDelta > 0 ? -1 : 1;
         this.WIN.camera.center.y += delta;
         this.WIN.camera.points[0].y += delta;
         this.WIN.camera.points[1].y += delta;
-        this.WIN.camera.points[0].y += delta;
+        this.WIN.camera.points[2].y += delta;
         this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
 
@@ -79,32 +79,39 @@ class Graph3D extends Component {
     }
 
     mousemove(event) {
-        if (this.canRotate) {
+        if (event.buttons == 2) {
             const { movementX, movementY } = event;
-            /*if (this.SolSysRotate) {
-                this.figures.forEach(figure => {
-                    figure.points.forEach(point => {
-                        this.math3D.rotateX(movementY / 180, point);
-                        this.math3D.rotateZ(movementX / 180, point);
-
-                        this.figures[0].rotX += movementY / 180;
-                        this.figures[0].rotZ += movementX / 180;
-
-                    });
-                });
-            }*/
             if (this.SolSysRotate) {
-                    this.WIN.camera.points.forEach(point => {
-                        point.x - this.WIN.camera.center.x;
-                        point.y - this.WIN.camera.center.y;
-                        point.z - this.WIN.camera.center.z;
-                        this.math3D.rotateX(movementY / 180, point);
-                        this.math3D.rotateZ(movementX / 180, point);
-                        point.x + this.WIN.camera.center.x;
-                        point.y + this.WIN.camera.center.y;
-                        point.z + this.WIN.camera.center.z;
-                    });
+                this.WIN.camera.points.forEach(point => {
+                    point.x - this.WIN.camera.center.x;
+                    point.y - this.WIN.camera.center.y;
+                    point.z - this.WIN.camera.center.z;
+                    this.math3D.rotateX(movementY / 180, point);
+                    this.math3D.rotateZ(movementX / 180, point);
+                    point.x + this.WIN.camera.center.x;
+                    point.y + this.WIN.camera.center.y;
+                    point.z + this.WIN.camera.center.z;
+                });
             }
+            this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
+        }
+        if (event.buttons == 4) {
+            const { movementX, movementY } = event;
+            this.WIN.camera.points.forEach(point => {
+                point.x += movementX / 30;
+                point.y += 0;
+                point.z += movementY / 30;
+            });
+            this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
+        }
+        if (event.buttons == 1) {
+            const { movementX, movementY } = event;
+            this.figures[0].points.forEach(point => {
+                this.math3D.rotateX(movementY / 180, point);
+                this.math3D.rotateZ(movementX / 180, point);
+            });
+            this.math3D.rotateX(movementY / 180, this.figures[0].angleChecker);
+            this.math3D.rotateZ(movementX / 180, this.figures[0].angleChecker);
             this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
         }
     }
@@ -143,11 +150,7 @@ class Graph3D extends Component {
             }
             )
         });
-        figures[0].points.forEach(point => {
-            scene.points.push(point)
-        }
-        )
-/*
+
         this.math3D.calcCenters(scene);
         this.math3D.calcDistance(scene, this.WIN.camera.center, 'distance');
         this.math3D.calcDistance(scene, this.LIGHT, 'lumen');
@@ -193,7 +196,7 @@ class Graph3D extends Component {
                     }),
                     polygon.color)
             });
-        }*/
+        }
     }
 
     addFigure(figure) {
@@ -307,11 +310,18 @@ class Graph3D extends Component {
 
                 switch (this.figures[0].name) {
                     case 'Cube':
+                        const angle = this.figures[0].checkAngle();
+                        console.log(angle)
                         this.figures[0] = new Cube(
                             document.getElementById('length').value ? document.getElementById('length').value - 0 : 10,
                             document.getElementById('width').value ? document.getElementById('width').value - 0 : 10,
                             document.getElementById('height').value ? document.getElementById('height').value - 0 : 10
                         )
+                        this.figures[0].points.forEach(point => {
+                            this.math3D.rotateX(angle.xA, point);
+                            this.math3D.rotateX(angle.yA, point);
+                            this.math3D.rotateZ(angle.zA, point);
+                        });
                         break;
                     case 'Sphere':
                         this.figures[0] = new Sphere(
