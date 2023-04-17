@@ -98,8 +98,8 @@ class Graph3D extends Component {
         if (event.buttons == 4) {
             const { movementX, movementY } = event;
             this.WIN.camera.points.forEach(point => {
-                point.x += movementX / 30;
-                point.y += 0;
+                point.x -= movementX / 30;
+                point.y -= 0;
                 point.z += movementY / 30;
             });
             this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
@@ -123,6 +123,9 @@ class Graph3D extends Component {
     renderScene(figures, CBP, CBE, CBF, backColor) {
 
         this.clear(backColor);
+
+        const angle = this.figures[0].checkAngle();
+        console.log(angle.xA / Math.PI * 180, angle.yA / Math.PI * 180, angle.zA / Math.PI * 180)
 
         const scene = new Figure;
 
@@ -204,85 +207,57 @@ class Graph3D extends Component {
             case 'Cube':
                 this.figures = [];
                 this.figures[0] = new Cube;
-                this.SolSysRotate = true;
-                this.backColor = '#ffffff';
-                this.LIGHT = new Light(20, 20, 20);
-                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
-                this.CBP = true;
-                this.CBE = true;
                 break;
             case 'Sphere':
                 this.figures = [];
                 this.figures[0] = new Sphere;
-                this.SolSysRotate = true;
-                this.backColor = '#ffffff';
-                this.LIGHT = new Light(20, 20, 20);
-                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
-                this.CBP = true;
-                this.CBE = true;
                 break;
             case 'Cylinder':
                 this.figures = [];
                 this.figures[0] = new Cylinder;
-                this.SolSysRotate = true;
-                this.backColor = '#ffffff';
-                this.LIGHT = new Light(20, 20, 20);
-                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
-                this.CBP = true;
-                this.CBE = true;
                 break;
             case 'Tor':
                 this.figures = [];
                 this.figures[0] = new Tor;
-                this.SolSysRotate = true;
-                this.backColor = '#ffffff';
-                this.LIGHT = new Light(20, 20, 20);
-                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
-                this.CBP = true;
-                this.CBE = true;
                 break;
             case 'HypPor':
                 this.figures = [];
                 this.figures[0] = new HyperbolicParaboloid;
-                this.SolSysRotate = true;
-                this.backColor = '#ffffff';
-                this.LIGHT = new Light(20, 20, 20);
-                this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
-                this.CBP = true;
-                this.CBE = true;
+                break;
+            case 'ElPor':
+                this.figures = [];
+                this.figures[0] = new ElepticParaboloid;
                 break;
             case 'TRSolSys':
                 this.figures = [];
-
-                const TRSolS = new TheRealSolarSystem;
-
-                const AE = TRSolS.AE;
-
                 this.figures = TRSolS.figures;
-
-                this.SolSysRotate = false;
-                this.CBP = false;
-                this.CBE = false;
-                this.backColor = '#111111';
-                this.LIGHT = new Light(0, 0, 0, 3.828 * Math.pow(10, 26));
-                this.WIN.camera = new Camera(0, AE * 80, 0, 20, 10, 10);
                 break;
             case 'SolSys':
                 this.figures = [];
-
-                const SolS = new SolarSystem;
-
-                const NRAE = SolS.NRAE;
-
                 this.figures = SolS.figures;
-
-                this.SolSysRotate = false;
-                this.CBP = false;
-                this.CBE = false;
-                this.backColor = '#111111';
-                this.LIGHT = new Light(0, 0, 0, 3.828 * Math.pow(10, 26));
-                this.WIN.camera = new Camera(0, NRAE * 80, 0, 20, 10, 10);
                 break;
+        }
+        if (figure === 'TRSolSys' || figure === 'SolSys') {
+            this.SolSysRotate = false;
+            this.CBP = false;
+            this.CBE = false;
+            this.backColor = '#111111';
+            this.LIGHT = new Light(0, 0, 0, 3.828 * Math.pow(10, 26));
+
+            const AE = new TheRealSolarSystem.AE;
+            const NRAE = new SolarSystem.NRAE;
+            if (figure === 'TRSolSys')
+                this.WIN.camera = new Camera(0, AE * 80, 0, 20, 10, 10);
+            else
+                this.WIN.camera = new Camera(0, NRAE * 80, 0, 20, 10, 10);
+        }
+        else {
+            this.SolSysRotate = true;
+            this.backColor = '#ffffff';
+            this.LIGHT = new Light(20, 20, 20);
+            this.WIN.camera = new Camera(0, 50, 0, 20, 10, 10);
+            this.CBP = true;
+            this.CBE = true;
         }
         this.renderScene(this.figures, this.CBP, this.CBE, this.CBF, this.backColor);
     }
@@ -305,13 +280,10 @@ class Graph3D extends Component {
                 break;
 
             case 'size':
-                // const rotX = this.figures[0].rotX;
-                // const rotZ = this.figures[0].rotZ;
-
                 switch (this.figures[0].name) {
                     case 'Cube':
                         const angle = this.figures[0].checkAngle();
-                        console.log(angle)
+                        const angleChecker = this.figures[0].angleChecker;
                         this.figures[0] = new Cube(
                             document.getElementById('length').value ? document.getElementById('length').value - 0 : 10,
                             document.getElementById('width').value ? document.getElementById('width').value - 0 : 10,
@@ -322,6 +294,7 @@ class Graph3D extends Component {
                             this.math3D.rotateX(angle.yA, point);
                             this.math3D.rotateZ(angle.zA, point);
                         });
+                        this.figures[0].angleChecker = angleChecker;
                         break;
                     case 'Sphere':
                         this.figures[0] = new Sphere(
